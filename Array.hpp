@@ -12,19 +12,19 @@ namespace LudosLib
 		T storage[size];
 
 	public:
-		Array()									//Default Constructor
+		Array()						//Default Constructor
 		{
 			for (size_t i = 0; i < size; i++)
 				storage[i] = T();
 		}
 
-		Array(T value)							//Fill constructor
+		Array(T value)					//Fill constructor
 		{
 			for (size_t i = 0; i < size; i++)
 				storage[i] = value;
 		}
 
-		Array(const Array& other)				//Copy Constructor
+		Array(const Array& other)			//Copy Constructor
 		{
 			copy(storage, other.storage, size);
 		}
@@ -48,7 +48,7 @@ namespace LudosLib
 			throw InvalidAccess("Trying to access elements outside the allocated memory");
 		}
 
-		size_t Size() const { return size; }	//Not especially useful but still
+		size_t Size() const { return size; }		//Not especially useful but still
 
 		const T* begin() const { return storage; }
 		const T* end() const { return (storage + size); }
