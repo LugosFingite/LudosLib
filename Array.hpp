@@ -12,44 +12,41 @@ namespace LudosLib
 		T storage[size];
 
 	public:
-		Array()						//Default Constructor
-		{
-			for (size_t i = 0; i < size; i++)
-				storage[i] = T();
-		}
-
-		Array(T value)					//Fill constructor
+		Array(T value = T())
 		{
 			for (size_t i = 0; i < size; i++)
 				storage[i] = value;
 		}
 
-		Array(const Array& other)			//Copy Constructor
+		Array(const Array& other)
 		{
 			copy(storage, other.storage, size);
 		}
 
-		void operator =(const Array& other)		//Copy
+		Array& operator =(const Array& other)
 		{
 			copy(storage, other.storage, size);
+			return *this;
 		}
 
-		T& operator [](size_t index)			//Element access
+		T& operator [](size_t index)
 		{
 			if (index < size)
 				return storage[index];
 			throw InvalidAccess("Trying to access elements outside the allocated memory");
 		}
 
-		T operator [](size_t index) const		//Element access (constant)
+		T operator [](size_t index) const
 		{
 			if (index < size)
 				return storage[index];
 			throw InvalidAccess("Trying to access elements outside the allocated memory");
 		}
 
-		size_t Size() const { return size; }		//Not especially useful but still
+		size_t Size() const { return size; }
 
+		T* begin() { return storage; }
+		T* end() { return (storage + size); }
 		const T* begin() const { return storage; }
 		const T* end() const { return (storage + size); }
 
@@ -57,5 +54,65 @@ namespace LudosLib
 		{
 			reverse(storage, size);
 		}
+	};
+
+	template <typename T>
+	class DynamicArray
+	{
+		T* storage;
+		size_t size = 0, allocated = 0;
+
+	public:
+		DynamicArray() : storage(new T[1]), size(0), allocated(1) {}
+
+		T& operator [](size_t index)
+		{
+			if (index < size)
+				return storage[index];
+			throw InvalidAccess("Trying to access elements outside the allocated memory");
+		}
+
+		T operator [](size_t index) const
+		{
+			if (index < size)
+				return storage[index];
+			throw InvalidAccess("Trying to access elements outside the allocated memory");
+		}
+
+		void Reserve(size_t s)
+		{
+			if (size + s > allocated)
+			{
+				allocated = size + s;
+
+				T* old = storage;
+				storage = new T[allocated];
+
+				copy(storage, old, size);
+				delete[] old;
+			}
+		}
+
+		void Append(T value)
+		{
+			if (size == allocated)
+				Reserve(allocated);
+			storage[size++] = value;
+		}
+
+		void Remove(size_t amount = 1)
+		{
+			if (amount > size)
+				throw InvalidAccess("Removing too much elements");
+			size -= amount;
+		}
+
+		size_t Size() const { return size; }
+		bool Empty() const { return !size; }
+
+		T* begin() { return storage; }
+		T* end() { return (storage + size); }
+		const T* begin() const { return storage; }
+		const T* end() const { return (storage + size); }
 	};
 }
