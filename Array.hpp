@@ -14,8 +14,8 @@ namespace LudosLib
 	public:
 		Array(T value = T())
 		{
-			for (size_t i = 0; i < size; i++)
-				storage[i] = value;
+			for (T& i : storage)
+				i = value;
 		}
 
 		Array(const Array& other)
@@ -64,6 +64,28 @@ namespace LudosLib
 
 	public:
 		DynamicArray() : storage(new T[1]), size(0), allocated(1) {}
+		~DynamicArray() { delete[] storage; }
+
+		DynamicArray(const DynamicArray& other) : storage(new T[other.size]), size(other.size), allocated(other.allocated)
+		{
+			copy(storage, other.storage, size);
+		}
+
+		DynamicArray(size_t s, T value) : storage(new T[s]), size(s), allocated(s)
+		{
+			for (size_t i = 0; i < s; i++)
+				storage[i] = value;
+		}
+
+		DynamicArray& operator =(const DynamicArray& other)
+		{
+			if (other.size > allocated)
+				Reserve(other.size - size);
+			size = other.size;
+
+			copy(storage, other.storage, size);
+			return *this;
+		}
 
 		T& operator [](size_t index)
 		{
