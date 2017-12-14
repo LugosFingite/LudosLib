@@ -59,7 +59,7 @@ namespace LudosLib
 	template <typename T>
 	class DynamicArray
 	{
-		T* storage;
+		T *storage;
 		size_t size = 0, allocated = 0;
 
 	public:
@@ -107,7 +107,7 @@ namespace LudosLib
 			{
 				allocated = size + s;
 
-				T* old = storage;
+				T *old = storage;
 				storage = new T[allocated];
 
 				copy(storage, old, size);
@@ -122,11 +122,31 @@ namespace LudosLib
 			storage[size++] = value;
 		}
 
-		void Remove(size_t amount = 1)
+		void Insert(T value, size_t index)
+		{
+			if (index > size)
+				throw InvalidAccess("Trying to insert in unallocated memory");
+			else
+			{
+				if (size == allocated)
+					Reserve(allocated);
+
+				T* tempStock = new T[size - index];
+				copy(tempStock, storage + index, size - index);
+				storage[index] = value;
+				copy(storage + index + 1, tempStock, size - index);
+
+				delete[] tempStock;
+				size++;
+			}
+		}
+
+		void Remove(size_t amount = 1) //Won't remove anything and will throw an error if trying to remove more elements than stored
 		{
 			if (amount > size)
-				throw InvalidAccess("Removing too much elements");
-			size -= amount;
+				throw EmptyContainerError("Removing too much elements");
+			else
+				size -= amount;
 		}
 
 		size_t Size() const { return size; }

@@ -5,9 +5,15 @@
 
 namespace LudosLib
 {
-	class InvalidAccess : std::runtime_error			//An exception for out-of-bound array access
+	class InvalidAccess : std::runtime_error
 	{
 	public:
 		InvalidAccess(const char* why);
+	};
+
+	class EmptyContainerError : std::runtime_error
+	{
+	public:
+		EmptyContainerError(const char* why);
 	};
 }
