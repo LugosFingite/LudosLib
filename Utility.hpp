@@ -23,4 +23,17 @@ namespace LudosLib
 		for (size_t i = 0; i < size--; i++)
 			swap(object[i], object[size]);
 	}
+
+	namespace DataStructs
+	{
+		template <typename T>
+		struct ChainNode
+		{
+			ChainNode(T value) : data(new T(value)) {}
+			~ChainNode() { delete data; }
+			
+			T *data;
+			ChainNode *previous = nullptr, *next = nullptr;
+		};
+	}
 }
