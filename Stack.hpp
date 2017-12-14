@@ -86,7 +86,7 @@ namespace LudosLib
 			size_t Size() const { return size; }
 			bool Empty() const { return !size; }
 
-			const T& Top() const
+			T Top() const
 			{
 				if (size > 0)
 					return *top->data;
