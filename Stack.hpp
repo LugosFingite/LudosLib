@@ -12,84 +12,76 @@ namespace LudosLib
 		template <typename T, size_t size>
 		class StaticStack
 		{
-			Array<T, size> storage;
-			size_t fill = 0;
+			Array<T, size> m_storage;
+			size_t m_fill = 0;
 
 		public:
 			void Push(T value)
 			{
-				storage[fill] = value;
-				fill++;
+				m_storage[m_fill] = value;
+				m_fill++;
 			}
 
 			void Pop(size_t amount = 1) //Won't remove anything and will throw an error if trying to remove more elements than stored
 			{
-				if (amount > fill)
+				if (amount > m_fill)
 					throw EmptyContainerError("Trying to remove from empty container");
 				else
-					fill -= amount;
+					m_fill -= amount;
 			}
 
-			size_t Size() const { return fill; }
-			bool Empty() const { return !fill; }
+			size_t Size() const { return m_fill; }
+			bool Empty() const { return !m_fill; }
 
-			T Top() const { return storage[fill - 1]; }
+			T Top() const { return m_storage[m_fill - 1]; }
 		};
 
 		template <typename T>
 		class Stack
 		{
-			ChainNode<T> *top = nullptr;
-			size_t size = 0;
+			ChainNode<T> *m_top = nullptr;
+			size_t m_size = 0;
 
 		public:
-			~Stack() //Yum ugly Destructor
-			{
-				while (top)
-				{
-					ChainNode<T> *old = top;
-					top = top->previous;
-					delete old;
-				}
-			}
+			~Stack() { delete m_top; }
 
 			void Push(T value)
 			{
-				if (size == 0)
-					top = new ChainNode<T>(value);
+				if (Empty())
+					m_top = new ChainNode<T>(value);
 				else
 				{
-					top->next = new ChainNode<T>(value);
-					top->next->previous = top;
-					top = top->next;
+					m_top->next = new ChainNode<T>(value);
+					m_top->next->previous = m_top;
+					m_top = m_top->next;
 				}
 
-				size++;
+				m_size++;
 			}
 
 			void Pop(size_t amount = 1) //Won't remove anything and will throw an error if trying to remove more elements than stored
 			{
-				if (amount > size)
+				if (amount > m_size)
 					throw EmptyContainerError("Trying to remove from empty container");
 				else
 				{
 					for (size_t i = 0; i < amount; i++)
 					{
-						top = top->previous;
-						delete top->next;
+						m_top = m_top->previous;
+						delete m_top->next;
 					}
 
-					size -= amount;
+					m_size -= amount;
 				}
 			}
 
-			size_t Size() const { return size; }
-			bool Empty() const { return !size; }
+			size_t Size() const { return m_size; }
+			bool Empty() const { return !m_size; }
 
 			T Top() const
 			{
-				if (size > 0)
-					return *top->data;
+				if (m_size > 0)
+					return m_top->data;
 				throw EmptyContainerError("Trying to access elements in an empty container");
 			}
 		};

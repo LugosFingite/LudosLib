@@ -9,152 +9,152 @@ namespace LudosLib
 	template <typename T, size_t size>
 	class Array
 	{
-		T storage[size];
+		T m_storage[size];
 
 	public:
 		Array(T value = T())
 		{
-			for (T& i : storage)
+			for (T& i : m_storage)
 				i = value;
 		}
 
-		Array(const Array& other)
+		Array(const Array &other)
 		{
-			copy(storage, other.storage, size);
+			copy(m_storage, other.m_storage, size);
 		}
 
-		Array& operator =(const Array& other)
+		Array &operator =(const Array &other)
 		{
-			copy(storage, other.storage, size);
+			copy(m_storage, other.m_storage, size);
 			return *this;
 		}
 
-		T& operator [](size_t index)
+		T &operator [](size_t index)
 		{
 			if (index < size)
-				return storage[index];
+				return m_storage[index];
 			throw InvalidAccess("Trying to access elements outside the allocated memory");
 		}
 
 		T operator [](size_t index) const
 		{
 			if (index < size)
-				return storage[index];
+				return m_storage[index];
 			throw InvalidAccess("Trying to access elements outside the allocated memory");
 		}
 
 		size_t Size() const { return size; }
 
-		T* begin() { return storage; }
-		T* end() { return (storage + size); }
-		const T* begin() const { return storage; }
-		const T* end() const { return (storage + size); }
+		T *begin() { return m_storage; }
+		T *end() { return (m_storage + size); }
+		const T *begin() const { return m_storage; }
+		const T *end() const { return (m_storage + size); }
 
 		void Reverse()
 		{
-			reverse(storage, size);
+			reverse(m_storage, size);
 		}
 	};
 
 	template <typename T>
 	class DynamicArray
 	{
-		T *storage;
-		size_t size = 0, allocated = 0;
+		T *m_storage;
+		size_t m_size = 0, m_allocated = 0;
 
 	public:
-		DynamicArray() : storage(new T[1]), size(0), allocated(1) {}
-		~DynamicArray() { delete[] storage; }
+		DynamicArray() : m_storage(new T[1]), m_size(0), m_allocated(1) {}
+		~DynamicArray() { delete[] m_storage; }
 
-		DynamicArray(const DynamicArray& other) : storage(new T[other.size]), size(other.size), allocated(other.allocated)
+		DynamicArray(const DynamicArray &other) : m_storage(new T[other.m_size]), m_size(other.m_size), m_allocated(other.m_allocated)
 		{
-			copy(storage, other.storage, size);
+			copy(m_storage, other.m_storage, m_size);
 		}
 
-		DynamicArray(size_t s, T value) : storage(new T[s]), size(s), allocated(s)
+		DynamicArray(size_t s, T value) : m_storage(new T[s]), m_size(s), m_allocated(s)
 		{
 			for (size_t i = 0; i < s; i++)
-				storage[i] = value;
+				m_storage[i] = value;
 		}
 
-		DynamicArray& operator =(const DynamicArray& other)
+		DynamicArray &operator =(const DynamicArray &other)
 		{
-			if (other.size > allocated)
-				Reserve(other.size - size);
-			size = other.size;
+			if (other.m_size > m_allocated)
+				Reserve(other.m_size - m_size);
+			m_size = other.m_size;
 
-			copy(storage, other.storage, size);
+			copy(m_storage, other.m_storage, m_size);
 			return *this;
 		}
 
-		T& operator [](size_t index)
+		T &operator [](size_t index)
 		{
-			if (index < size)
-				return storage[index];
+			if (index < m_size)
+				return m_storage[index];
 			throw InvalidAccess("Trying to access elements outside the allocated memory");
 		}
 
 		T operator [](size_t index) const
 		{
-			if (index < size)
-				return storage[index];
+			if (index < m_size)
+				return m_storage[index];
 			throw InvalidAccess("Trying to access elements outside the allocated memory");
 		}
 
 		void Reserve(size_t s)
 		{
-			if (size + s > allocated)
+			if (m_size + s > m_allocated)
 			{
-				allocated = size + s;
+				m_allocated = m_size + s;
 
-				T *old = storage;
-				storage = new T[allocated];
+				T *old = m_storage;
+				m_storage = new T[m_allocated];
 
-				copy(storage, old, size);
+				copy(m_storage, old, m_size);
 				delete[] old;
 			}
 		}
 
 		void Append(T value)
 		{
-			if (size == allocated)
-				Reserve(allocated);
-			storage[size++] = value;
+			if (m_size == m_allocated)
+				Reserve(m_allocated);
+			m_storage[m_size++] = value;
 		}
 
 		void Insert(T value, size_t index)
 		{
-			if (index > size)
+			if (index > m_size)
 				throw InvalidAccess("Trying to insert in unallocated memory");
 			else
 			{
-				if (size == allocated)
-					Reserve(allocated);
+				if (m_size == m_allocated)
+					Reserve(m_allocated);
 
-				T* tempStock = new T[size - index];
-				copy(tempStock, storage + index, size - index);
-				storage[index] = value;
-				copy(storage + index + 1, tempStock, size - index);
+				T *tempStock = new T[m_size - index];
+				copy(tempStock, m_storage + index, m_size - index);
+				m_storage[index] = value;
+				copy(m_storage + index + 1, tempStock, m_size - index);
 
 				delete[] tempStock;
-				size++;
+				m_size++;
 			}
 		}
 
 		void Remove(size_t amount = 1) //Won't remove anything and will throw an error if trying to remove more elements than stored
 		{
-			if (amount > size)
+			if (amount > m_size)
 				throw EmptyContainerError("Removing too much elements");
 			else
-				size -= amount;
+				m_size -= amount;
 		}
 
-		size_t Size() const { return size; }
-		bool Empty() const { return !size; }
+		size_t Size() const { return m_size; }
+		bool Empty() const { return !m_size; }
 
-		T* begin() { return storage; }
-		T* end() { return (storage + size); }
-		const T* begin() const { return storage; }
-		const T* end() const { return (storage + size); }
+		T *begin() { return m_storage; }
+		T *end() { return (m_storage + m_size); }
+		const T *begin() const { return m_storage; }
+		const T *end() const { return (m_storage + m_size); }
 	};
 }
